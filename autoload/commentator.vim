@@ -1,12 +1,18 @@
+function! s:strip(string)
+    let new_string = substitute(a:string, '^\s*\(.\{-}\)\s*$', '\1', '')
+    return new_string
+endfunction
+
 function! s:get_split_cmnt_str()
     let surrounding = split(&commentstring, '%s')
-    if len(surrounding) == 0
-        let surrounding = ["", ""]
-    endif
+    let [l, r] = ["",""]
     if len(surrounding) == 1
-        let surrounding = surrounding + [""]
+        let l = s:strip(surrounding[0])
     endif
-    return surrounding
+    if len(surrounding) == 2
+        let r = s:strip(surrounding[1])
+    endif
+    return [l, r]
 endfunction
 
 function! s:surround(l, r, string)
@@ -16,7 +22,7 @@ endfunction
 function! commentator#Comment()
     let [left_cmnt_str, right_cmnt_str] = s:get_split_cmnt_str()
     let col = getcurpos()[2]
-    exe "normal! _i" .. left_cmnt_str .. "A" .. right_cmnt_str .. "" .. col  .. "|"
+    exe "normal! 0i" .. left_cmnt_str .. "A" .. right_cmnt_str .. "" .. col  .. "|"
 endfunction
 
 function! commentator#Uncomment()
