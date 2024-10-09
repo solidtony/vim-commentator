@@ -1,38 +1,17 @@
-function! s:get_split_cmnt_str()
-    let surrounding = split(&commentstring, '%s')
-    if len(surrounding) == 0
-        let surrounding = ["", ""]
-    endif
-    if len(surrounding) == 1
-        let surrounding = surrounding + [""]
-    endif
-    return surrounding
-endfunction
+" Title:        commentator Plugin
+" Description:  A plugin to provide an example for creating Vim plugins.
+" Last Change:  9 October 2024
+" Maintainer:   Anthony Garcia <https://github.com/example-user>
 
-function! s:surround(l, r, string)
-    return a:l .. a:string .. a:r
-endfunction
+" Prevents the plugin from being loaded multiple times. If the loaded
+" variable exists, do nothing more. Otherwise, assign the loaded
+" variable and continue running this instance of the plugin.
+if exists("g:loaded_commentator")
+    finish
+endif
+let g:loaded_commentator = 1
 
-function! Comment()
-    let [left_cmnt_str, right_cmnt_str] = s:get_split_cmnt_str()
-    let col = getcurpos()[2]
-    exe "normal! _i" .. left_cmnt_str .. "A" .. right_cmnt_str .. "" .. col  .. "|"
-endfunction
-
-function! Uncomment()
-    let [left_cmnt_str, right_cmnt_str] = s:get_split_cmnt_str()
-    let cur_col = getcurpos()[2]
-    exe "normal! _"
-    line = getline()
-    let line = getline(".")
-    let pattern = left_cmnt_str .. ".*" .. right_cmnt_str
-    echo pattern
-    
-    "substitute(line, left_cmnt_str .. ".*" .. right_cmnt_str, "")
-    "setline(line)
-    "echo line
-endfunction
-
-nmap <leader>c :call Comment()<CR>
-nmap <leader>u :call Uncomment()<CR>
+" Exposes the plugin's functions for use as commands in Vim.
+nmap <leader>c :call commentator#Comment()<CR>
+nmap <leader>u :call commentator#Uncomment()<CR>
 
