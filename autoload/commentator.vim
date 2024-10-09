@@ -7,10 +7,10 @@ function! s:get_split_cmnt_str()
     let surrounding = split(&commentstring, '%s')
     let [l, r] = ["",""]
     if len(surrounding) == 1
-        let l = s:strip(surrounding[0])
+        let l = surrounding[0]
     endif
     if len(surrounding) == 2
-        let r = s:strip(surrounding[1])
+        let r = surrounding[1]
     endif
     return [l, r]
 endfunction
@@ -22,20 +22,15 @@ endfunction
 function! commentator#Comment()
     let [left_cmnt_str, right_cmnt_str] = s:get_split_cmnt_str()
     let col = getcurpos()[2]
-    exe "normal! 0i" .. left_cmnt_str .. "A" .. right_cmnt_str .. "" .. col  .. "|"
+    exe "normal! I" .. left_cmnt_str .. "A" .. right_cmnt_str .. "" .. col  .. "|"
 endfunction
 
 function! commentator#Uncomment()
     let [left_cmnt_str, right_cmnt_str] = s:get_split_cmnt_str()
-    let cur_col = getcurpos()[2]
-    exe "normal! _"
-    line = getline()
+    let [_,cur_line, cur_col, _, _] = getcurpos()
     let line = getline(".")
-    let pattern = left_cmnt_str .. ".*" .. right_cmnt_str
-    echo pattern
-    
-    "substitute(line, left_cmnt_str .. ".*" .. right_cmnt_str, "")
-    "setline(line)
-    "echo line
+    let reg_pattern = '^\(\s*\)\(' .. left_cmnt_str .. '\)\(.*\)\(' .. right_cmnt_str .. '\)\s*$'
+    let new_line = substitute(line, reg_pattern, '\1\3', '')
+    call setline(cur_line, new_line)
 endfunction
 
