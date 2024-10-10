@@ -36,6 +36,10 @@ function! commentator#Uncomment()
     let reg_pattern = '^\(\s*\)\(' .. s:escape_for_regex(l) .. '\)\(.*\)\(' .. s:escape_for_regex(r) .. '\)\s*$'
     let new_line = substitute(line, reg_pattern, '\1\3', '')
     call setline(cur_line, new_line)
-    call cursor(cur_line, cur_col-len(l))
+    let new_cur_col = cur_col
+    if len(line) != len(new_line)
+        let new_cur_col -= len(l)
+    endif
+    call cursor(cur_line, new_cur_col)
 endfunction
 
