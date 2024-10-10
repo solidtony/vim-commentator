@@ -19,18 +19,23 @@ function! s:surround(l, r, string)
     return a:l .. a:string .. a:r
 endfunction
 
+function! s:escape_for_regex(string)
+    return escape(a:string, '^$.*?/\[]~')
+endfunction
+
 function! commentator#Comment()
-    let [left_cmnt_str, right_cmnt_str] = s:get_split_cmnt_str()
-    let col = getcurpos()[2]
-    exe "normal! I" .. left_cmnt_str .. "A" .. right_cmnt_str .. "" .. col  .. "|"
+    let [l, r] = s:get_split_cmnt_str()
+    let col = getcurpos()[2] + len(l)
+    exe "normal! I" .. l .. "A" .. r .. "" .. col  .. "|"
 endfunction
 
 function! commentator#Uncomment()
-    let [left_cmnt_str, right_cmnt_str] = s:get_split_cmnt_str()
+    let [l, r] = s:get_split_cmnt_str()
     let [_,cur_line, cur_col, _, _] = getcurpos()
     let line = getline(".")
-    let reg_pattern = '^\(\s*\)\(' .. left_cmnt_str .. '\)\(.*\)\(' .. right_cmnt_str .. '\)\s*$'
+    let reg_pattern = '^\(\s*\)\(' .. s:escape_for_regex(l) .. '\)\(.*\)\(' .. s:escape_for_regex(r) .. '\)\s*$'
     let new_line = substitute(line, reg_pattern, '\1\3', '')
     call setline(cur_line, new_line)
+    call cursor(cur_line, cur_col-len(l))
 endfunction
 
