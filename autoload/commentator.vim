@@ -6,10 +6,10 @@ endfunction
 function! s:get_split_cmnt_str()
     let surrounding = split(&commentstring, '%s')
     let [l, r] = ["",""]
-    if len(surrounding) == 1
+    if len(surrounding) > 0
         let l = surrounding[0]
     endif
-    if len(surrounding) == 2
+    if len(surrounding) > 1
         let r = surrounding[1]
     endif
     return [l, r]
